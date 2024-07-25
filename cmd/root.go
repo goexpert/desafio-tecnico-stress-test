@@ -30,7 +30,7 @@ Por fim tem-se um relatório do resultado do teste.`,
 		}
 		concurrency, err := strconv.Atoi(argConcurrency)
 		if err != nil {
-			panic("invalid requests")
+			panic("invalid concurrency")
 		}
 		println(url)
 		println(requests)

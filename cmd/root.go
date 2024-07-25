@@ -4,7 +4,7 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"errors"
+	"net/http"
 	"os"
 	"strconv"
 
@@ -23,14 +23,12 @@ e quantidade de chamadas simultâneas (vcpus) para a execução do
 Teste.
 Por fim tem-se um relatório do resultado do teste.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		var err = errors.New("")
-		requests := 1
-		concurrency := 1
-		requests, err = strconv.Atoi(argRequests)
+		distribution := make(map[int]int)
+		requests, err := strconv.Atoi(argRequests)
 		if err != nil {
 			panic("invalid requests")
 		}
-		concurrency, err = strconv.Atoi(argConcurrency)
+		concurrency, err := strconv.Atoi(argConcurrency)
 		if err != nil {
 			panic("invalid requests")
 		}
@@ -38,6 +36,15 @@ Por fim tem-se um relatório do resultado do teste.`,
 		println(requests)
 		println(concurrency)
 
+		resp, err := http.Get(url)
+		if err != nil {
+			panic(err)
+		}
+		distribution[resp.StatusCode] = 1
+		for k, v := range distribution {
+			println(k)
+			println(v)
+		}
 	},
 }
 

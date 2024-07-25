@@ -27,10 +27,17 @@ Garantir que o número total de requests seja cumprido.
 Geração de Relatório:
 
 Apresentar um relatório ao final dos testes contendo:
-Tempo total gasto na execução
-Quantidade total de requests realizados.
-Quantidade de requests com status HTTP 200.
-Distribuição de outros códigos de status HTTP (como 404, 500, etc.).
-Execução da aplicação:
-Poderemos utilizar essa aplicação fazendo uma chamada via docker. Ex:
-docker run <sua imagem docker> —url=http://google.com —requests=1000 —concurrency=10
+
+* Tempo total gasto na execução
+
+* Quantidade total de requests realizados.
+
+* Quantidade de requests com status HTTP 200.
+
+* Distribuição de outros códigos de status HTTP (como 404, 500, etc.).
+
+* Execução da aplicação:
+
+* Poderemos utilizar essa aplicação fazendo uma chamada via docker. Ex:
+
+* docker run <sua imagem docker> —url=http://google.com —requests=1000 —concurrency=10

@@ -1,30 +1,44 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
+	"errors"
 	"os"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
 
-
-
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "desafio-tecnico-stress-test",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short: "Teste de stress para endpoints http",
+	Long: `Ferramenta para execução de testes de stress para 
+endpoints http.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+Nesta ferramenta, informa-se a URL, a quantidade de requisições 
+e quantidade de chamadas simultâneas (vcpus) para a execução do
+Teste.
+Por fim tem-se um relatório do resultado do teste.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		var err = errors.New("")
+		requests := 1
+		concurrency := 1
+		requests, err = strconv.Atoi(argRequests)
+		if err != nil {
+			panic("invalid requests")
+		}
+		concurrency, err = strconv.Atoi(argConcurrency)
+		if err != nil {
+			panic("invalid requests")
+		}
+		println(url)
+		println(requests)
+		println(concurrency)
+
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -36,16 +50,23 @@ func Execute() {
 	}
 }
 
+var url string
+var argRequests string
+var argConcurrency string
+
 func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.desafio-tecnico-stress-test.yaml)")
+	rootCmd.PersistentFlags().StringVar(&url, "url", "", "web service to test")
+	rootCmd.PersistentFlags().StringVar(&argRequests, "requests", "1", "requests quantity")
+	rootCmd.PersistentFlags().StringVar(&argConcurrency, "concurrency", "1", "simultaneous requests quantity")
+
+	rootCmd.MarkPersistentFlagRequired("url")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
-
-

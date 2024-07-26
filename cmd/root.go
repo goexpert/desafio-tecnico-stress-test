@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -24,29 +26,33 @@ e quantidade de chamadas simultâneas (vcpus) para a execução do
 Teste.
 Por fim tem-se um relatório do resultado do teste.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		distribution := make(map[int]int)
+		// distribution := make(map[int]int)
+		// var duration []int
 		requests, err := strconv.Atoi(argRequests)
 		if err != nil {
 			panic("invalid requests")
 		}
-		// concurrency, err := strconv.Atoi(argConcurrency)
-		// if err != nil {
-		// 	panic("invalid concurrency")
-		// }
+		concurrency, err := strconv.Atoi(argConcurrency)
+		if err != nil {
+			panic("invalid concurrency")
+		}
 
-		for i := 0; i < requests; i++ {
-			resp, err := http.Get(url)
-			if err != nil {
-				panic(err)
-			}
-			if _, ok := distribution[resp.StatusCode]; !ok {
-				distribution[resp.StatusCode] = 0
-			}
-			distribution[resp.StatusCode]++
+		distOnConcurrency := distrubuteRequests(requests, concurrency)
+
+		var wg sync.WaitGroup
+		wg.Add(concurrency)
+		for i := 0; i < concurrency; i++ {
+			go loopRequests(&wg, url, distOnConcurrency[i])
 		}
-		for k, v := range distribution {
-			log.Println(k, v)
-		}
+
+		wg.Wait()
+
+		// for k, v := range distribution {
+		// 	log.Println(k, v)
+		// }
+		// for k, v := range duration {
+		// 	log.Println(k, v)
+		// }
 	},
 }
 
@@ -78,4 +84,41 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func request(url string) (code int, duration int64) {
+	start := time.Now()
+	resp, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	totalTime := time.Since(start).Microseconds()
+	return resp.StatusCode, totalTime
+
+}
+
+func loopRequests(wg *sync.WaitGroup, url string, qty int) {
+	defer wg.Done()
+	for i := 0; i < qty; i++ {
+		code, reqDuration := request(url)
+		// if _, ok := distribution[code]; !ok {
+		// 	distribution[code] = code
+		// }
+		// distribution[code]++
+		// duration = append(duration, int(reqDuration))
+		log.Println(code, reqDuration)
+	}
+}
+
+func distrubuteRequests(requests, concurrency int) map[int]int {
+	distReqs := make(map[int]int)
+	distribution := requests / concurrency
+	rest := requests % concurrency
+	for i := 0; i < concurrency; i++ {
+		distReqs[i] = distribution
+	}
+	for i := 0; i < rest; i++ {
+		distReqs[i]++
+	}
+	return distReqs
 }

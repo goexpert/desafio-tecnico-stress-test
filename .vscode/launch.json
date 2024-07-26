@@ -12,7 +12,7 @@
             "program": "main.go",
             "args": [
                 "--url=http://192.168.15.43:8888",
-                "--requests=3",
+                "--requests=20",
                 "--concurrency=3"
             ]
         }

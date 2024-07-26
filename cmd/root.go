@@ -29,24 +29,23 @@ Por fim tem-se um relatório do resultado do teste.`,
 		if err != nil {
 			panic("invalid requests")
 		}
-		concurrency, err := strconv.Atoi(argConcurrency)
-		if err != nil {
-			panic("invalid concurrency")
-		}
-		println(url)
-		println(requests)
-		println(concurrency)
+		// concurrency, err := strconv.Atoi(argConcurrency)
+		// if err != nil {
+		// 	panic("invalid concurrency")
+		// }
 
 		for i := 0; i < requests; i++ {
 			resp, err := http.Get(url)
 			if err != nil {
 				panic(err)
 			}
-			distribution[resp.StatusCode] = 1
-			for k, v := range distribution {
-				log.Println(k)
-				log.Println(v)
+			if _, ok := distribution[resp.StatusCode]; !ok {
+				distribution[resp.StatusCode] = 0
 			}
+			distribution[resp.StatusCode]++
+		}
+		for k, v := range distribution {
+			log.Println(k, v)
 		}
 	},
 }

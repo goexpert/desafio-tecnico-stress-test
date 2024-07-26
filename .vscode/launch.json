@@ -10,7 +10,11 @@
             "request": "launch",
             "mode": "auto",
             "program": "main.go",
-            "args": ["--url=https://google.com/gerebas"]
+            "args": [
+                "--url=http://192.168.15.43:8888",
+                "--requests=3",
+                "--concurrency=3"
+            ]
         }
     ]
 }

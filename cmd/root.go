@@ -4,6 +4,7 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -36,14 +37,16 @@ Por fim tem-se um relatório do resultado do teste.`,
 		println(requests)
 		println(concurrency)
 
-		resp, err := http.Get(url)
-		if err != nil {
-			panic(err)
-		}
-		distribution[resp.StatusCode] = 1
-		for k, v := range distribution {
-			println(k)
-			println(v)
+		for i := 0; i < requests; i++ {
+			resp, err := http.Get(url)
+			if err != nil {
+				panic(err)
+			}
+			distribution[resp.StatusCode] = 1
+			for k, v := range distribution {
+				log.Println(k)
+				log.Println(v)
+			}
 		}
 	},
 }

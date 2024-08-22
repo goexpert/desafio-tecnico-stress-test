@@ -23,16 +23,29 @@ func Request(url string, status chan int, duration chan time.Duration) {
 func ConcurrentRequests(url string, concurrency, requests int) ([]int, []time.Duration) {
 	status := make(chan int, concurrency)
 	duration := make(chan time.Duration, concurrency)
-
+	reqsByConcurrency := requests / concurrency
+	modulus := requests % concurrency
+	var listaReqs []int
 	for range concurrency {
+		incremento := 0
+		if modulus > 0 {
+			incremento = 1
+			modulus--
+		}
+		listaReqs = append(listaReqs, reqsByConcurrency+incremento)
+	}
+
+	for k := range concurrency {
 		go func() {
-			Request(url, status, duration)
+			for range listaReqs[k] {
+				Request(url, status, duration)
+			}
 		}()
 	}
 
 	var statusesCodes []int
 	var durations []time.Duration
-	for range concurrency {
+	for range requests {
 		statusesCodes = append(statusesCodes, <-status)
 		durations = append(durations, <-duration)
 	}

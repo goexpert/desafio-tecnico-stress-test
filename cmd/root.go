@@ -4,7 +4,6 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -26,15 +25,12 @@ e quantidade de chamadas simultâneas (vcpus) para a execução do
 Teste.
 Por fim tem-se um relatório do resultado do teste.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		var err = errors.New("")
-		requests := 1
-		concurrency := 1
-		requests, err = strconv.Atoi(argRequests)
+		requests, err := strconv.Atoi(argRequests)
 		if err != nil {
 			fmt.Println("stress-test <url> <qty requests> <qty concurrencies>")
 			return
 		}
-		concurrency, err = strconv.Atoi(argConcurrency)
+		concurrency, err := strconv.Atoi(argConcurrency)
 		if err != nil {
 			fmt.Println("stress-test <url> <qty requests> <qty concurrencies>")
 			return
@@ -53,12 +49,12 @@ Por fim tem-se um relatório do resultado do teste.`,
 		}
 		averageDuration := total / time.Duration(len(durations))
 
-		println(url)
-		println(requests)
-		println(concurrency)
-		fmt.Println(countStatuses)
-		fmt.Println(averageDuration / time.Microsecond)
-
+		fmt.Printf("URL: %s\nRequests: %d\nConcurrency: %d\n", url, requests, concurrency)
+		fmt.Println("Statuses distribution:")
+		for k, v := range countStatuses {
+			fmt.Printf("\tStatus Code: %d = %d responses", k, v)
+		}
+		fmt.Printf("\nRequests average: %s\n", averageDuration/time.Microsecond)
 	},
 }
 
@@ -90,12 +86,4 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-}
-
-func averageDuration(durations []time.Duration) time.Duration {
-	var total time.Duration
-	for _, d := range durations {
-		total += d
-	}
-	return total / time.Duration(len(durations))
 }

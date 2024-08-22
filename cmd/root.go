@@ -5,9 +5,12 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strconv"
+	"time"
 
+	"github.com/goexpert/desafio-tecnico-stress-test/internal/service"
 	"github.com/spf13/cobra"
 )
 
@@ -28,15 +31,33 @@ Por fim tem-se um relatório do resultado do teste.`,
 		concurrency := 1
 		requests, err = strconv.Atoi(argRequests)
 		if err != nil {
-			panic("invalid requests")
+			fmt.Println("stress-test <url> <qty requests> <qty concurrencies>")
+			return
 		}
 		concurrency, err = strconv.Atoi(argConcurrency)
 		if err != nil {
-			panic("invalid requests")
+			fmt.Println("stress-test <url> <qty requests> <qty concurrencies>")
+			return
 		}
+
+		statuses, durations := service.ConcurrentRequests(url, concurrency, requests)
+
+		countStatuses := make(map[int]int)
+		for _, v := range statuses {
+			countStatuses[v]++
+		}
+
+		var total time.Duration
+		for _, d := range durations {
+			total += d
+		}
+		averageDuration := total / time.Duration(len(durations))
+
 		println(url)
 		println(requests)
 		println(concurrency)
+		fmt.Println(countStatuses)
+		fmt.Println(averageDuration / time.Microsecond)
 
 	},
 }
@@ -69,4 +90,12 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func averageDuration(durations []time.Duration) time.Duration {
+	var total time.Duration
+	for _, d := range durations {
+		total += d
+	}
+	return total / time.Duration(len(durations))
 }

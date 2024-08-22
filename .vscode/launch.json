@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "main.go",
-            "args": ["--url=teste"]
+            "args": ["--url=http://10.16.4.59:8888", "--requests=7", "--concurrency=2"]
         }
     ]
 }

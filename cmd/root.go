@@ -4,6 +4,7 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/goexpert/desafio-tecnico-stress-test/internal/service"
 	"github.com/spf13/cobra"
 )
 
@@ -26,33 +28,36 @@ e quantidade de chamadas simultâneas (vcpus) para a execução do
 Teste.
 Por fim tem-se um relatório do resultado do teste.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// distribution := make(map[int]int)
-		// var duration []int
 		requests, err := strconv.Atoi(argRequests)
 		if err != nil {
-			panic("invalid requests")
+			fmt.Println("stress-test <url> <qty requests> <qty concurrencies>")
+			return
 		}
 		concurrency, err := strconv.Atoi(argConcurrency)
 		if err != nil {
-			panic("invalid concurrency")
+			fmt.Println("stress-test <url> <qty requests> <qty concurrencies>")
+			return
 		}
 
-		distOnConcurrency := distrubuteRequests(requests, concurrency)
+		statuses, durations := service.ConcurrentRequests(url, concurrency, requests)
 
-		var wg sync.WaitGroup
-		wg.Add(concurrency)
-		for i := 0; i < concurrency; i++ {
-			go loopRequests(&wg, url, distOnConcurrency[i])
+		countStatuses := make(map[int]int)
+		for _, v := range statuses {
+			countStatuses[v]++
 		}
 
-		wg.Wait()
+		var total time.Duration
+		for _, d := range durations {
+			total += d
+		}
+		averageDuration := total / time.Duration(len(durations))
 
-		// for k, v := range distribution {
-		// 	log.Println(k, v)
-		// }
-		// for k, v := range duration {
-		// 	log.Println(k, v)
-		// }
+		fmt.Printf("URL: %s\nRequests: %d\nConcurrency: %d\n", url, requests, concurrency)
+		fmt.Println("Statuses distribution:")
+		for k, v := range countStatuses {
+			fmt.Printf("\tStatus Code: %d = %d responses", k, v)
+		}
+		fmt.Printf("\nRequests average: %s\n", averageDuration/time.Microsecond)
 	},
 }
 

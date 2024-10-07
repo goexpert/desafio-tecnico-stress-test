@@ -1,6 +1,14 @@
 = Desafio Técnico - Stress Test
+Doc Writer <rogeriotadim@gmail.com>
+:toc:
 
 == Solução
+
+exemplo:
+[source, shell]
+----
+docker run -it --rm rogeriotadim/pos-go-expert:stress-test --url https://google.com --requests 100 --concurrency 3
+----
 
 == Desafio
 
@@ -28,16 +36,16 @@ Geração de Relatório:
 
 Apresentar um relatório ao final dos testes contendo:
 
-* Tempo total gasto na execução
+* ✅ Tempo total gasto na execução
 
-* Quantidade total de requests realizados.
+* ✅ Quantidade total de requests realizados.
 
-* Quantidade de requests com status HTTP 200.
+* ✅ Quantidade de requests com status HTTP 200.
 
-* Distribuição de outros códigos de status HTTP (como 404, 500, etc.).
+* ✅ Distribuição de outros códigos de status HTTP (como 404, 500, etc.).
 
-* Execução da aplicação:
+* ✅ Execução da aplicação:
 
-* Poderemos utilizar essa aplicação fazendo uma chamada via docker. Ex:
+* ✅ Poderemos utilizar essa aplicação fazendo uma chamada via docker. Ex:
 
-* docker run <sua imagem docker> —url=http://google.com —requests=1000 —concurrency=10
+* ✅ docker run <sua imagem docker> —url=http://google.com —requests=1000 —concurrency=10
